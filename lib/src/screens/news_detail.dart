@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hacker_news/src/models/item_model.dart';
+import 'package:flutter_hacker_news/src/widgets/comment.dart';
 import '../blocs/comments_provider.dart';
 
 class NewsDetail extends StatelessWidget {
@@ -36,7 +37,7 @@ class NewsDetail extends StatelessWidget {
               return Text('Loading');
             }
 
-            return buildTitle(itemSnapshot.data);
+            return buildList(itemSnapshot.data, snapshot.data);
           },
         );
       },
@@ -46,6 +47,7 @@ class NewsDetail extends StatelessWidget {
   Widget buildTitle(ItemModel item) {
     return Container(
       margin: EdgeInsets.all(10.0),
+      alignment: Alignment.topCenter,
       child: Text(
         item.title,
         textAlign: TextAlign.center,
@@ -54,6 +56,25 @@ class NewsDetail extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+
+  Widget buildList(ItemModel item, Map<int, Future<ItemModel>> itemMap) {
+    final children = <Widget>[];
+
+    children.add(buildTitle(item));
+    final commentsList = item.kids.map((kidId) {
+      return Comment(
+        itemId: kidId,
+        itemMap: itemMap,
+        depth: 0,
+      );
+    }).toList();
+
+    children.addAll(commentsList);
+
+    return ListView(
+      children: children,
     );
   }
 }
